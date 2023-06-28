@@ -1,5 +1,16 @@
 import { useState } from "react";
 import server from "./server";
+import { secp256k1 } from "ethereum-cryptography/secp256k1";
+import { utf8ToBytes } from "ethereum-cryptography/utils";
+import { keccak256 } from "ethereum-cryptography/keccak";
+
+
+function replacer(key, value) {
+  if (typeof value === 'bigint') {
+    return value.toString();
+  }
+  return value;
+}
 
 function Transfer({ address, setBalance }) {
   const [sendAmount, setSendAmount] = useState("");
@@ -9,7 +20,11 @@ function Transfer({ address, setBalance }) {
 
   async function transfer(evt) {
     evt.preventDefault();
-
+    
+    let privateKey = prompt("Please, enter your Private Key to sign the transaction.", "Your Private Key");
+    const hashMessage = keccak256(utf8ToBytes(sendAmount.toString()));
+    const signature = secp256k1.sign(hashMessage, privateKey);
+    
     try {
       const {
         data: { balance },
@@ -17,6 +32,7 @@ function Transfer({ address, setBalance }) {
         sender: address,
         amount: parseInt(sendAmount),
         recipient,
+        sign: JSON.stringify(signature, replacer),
       });
       setBalance(balance);
     } catch (ex) {

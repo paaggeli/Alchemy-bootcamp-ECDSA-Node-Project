@@ -4,6 +4,26 @@ This project is an example of using a client and server to facilitate transfers 
 
 However, something that we would like to incoporate is Public Key Cryptography. By using Elliptic Curve Digital Signatures we can make it so the server only allows transfers that have been signed for by the person who owns the associated address.
 
+### My Solution
+
+**Front-end**
+
+My solution uses the `ethereum-cryptography` version 2 JS library.
+
+When you run the application, you will see an Ethereum address to test, which has a balance of 100 credits, along with its private key.
+
+When you make a transfer, a JavaScript prompt will appear, asking you to enter the private key.
+
+We use the private key to sign the message. The private key is not saved or sent to the server for security reasons.
+
+The signature, along with the rest of the data, is then sent to the server.
+
+**Server-side**
+
+On the server side, we recover the public key from the signature, verify the signature, and recreate the Ethereum address.
+
+We compare the sender address with the recreated address, and if they match, we continue the process of transferring the credits, provided there is enough balance.
+
 ### Video instructions
 For an overview of this project as well as getting started instructions, check out the following video:
 
